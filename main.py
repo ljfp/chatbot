@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+from prompts import system_prompt
 
 def main():
     load_dotenv()
@@ -20,7 +21,12 @@ def main():
     model = "gemini-2.5-flash"
     messages = [types.Content(role="user", parts=[types.Part(text=args.user_prompt)])]
     response = client.models.generate_content(
-        model=model, contents=messages
+        model=model,
+        contents=messages,
+        config=types.GenerateContentConfig(
+            system_instruction=system_prompt,
+            temperature=0
+        ),
     )
     if not response.usage_metadata:
         raise RuntimeError("Failed API request.")
@@ -32,3 +38,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
